@@ -122,8 +122,13 @@ Create an application that allows a user to interact with a database of superher
           - UPDATE abilities with hero id and ability type id
     - Else if b.
 
-5. change_relationship (id1, id2)
-6. retire_hero (id)
+5. change_relationship (*id*)
+6. retire_hero (*id*)
+   - Query the **heroes** table for the *name* that matches the passed *id*, store the value in *hero_name*
+   - Ask the user if they want to delete the record for *hero_name*
+   - If yes:
+     - Delete the record that matches the passed *id* from the table
+     - Print "*hero_name* was retired from the database"
 
 ### Procedure:
 	Declare an input value
