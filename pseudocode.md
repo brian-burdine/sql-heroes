@@ -2,33 +2,33 @@
 
 ## Objective
 
-Create an application that allows a user to interact with a database of superheroes in the terminal. The application should have full CRUD (Create Read Update Delete) functionality.
+Create an application that allows a user to interact with a database of superheroes in the terminal. The application should have full CRUD (Create Read Update Delete) functionality. psycopg is used to query the database.
 
 ## Database Structure
 
-- heroes
+- **heroes**
   - id
   - name
   - about_me
   - biography
   - image_url
 
-- abilities
+- **abilities**
   - id
   - hero_id
   - ability_type_id
 	
-- ability_types
+- **ability_types**
   - id
   - name
 
-- relationships
+- **relationships**
   - id
   - hero1id
   - hero2id
   - relationship_type_id
 
-- relationship_types
+- **relationship_types**
   - id
   - name
 
@@ -47,9 +47,19 @@ Create an application that allows a user to interact with a database of superher
 	
 ### Functions
 1. **display_active_heroes**
-   - Display all heroes in the heroes table along with their id
+   - Display all heroes in the **heroes** table along with their id
+   - Procedure:
+     1. START **display_active_heroes**
+     2. QUERY the **heroes** table for the count of entries in the *id* column (everything should have an id, at least), STORE the value in *act_hero_count*
+     3. QUERY the **heroes** table for the *id* and *name* columns, STORE the value in *heroes*
+     4. PRINT the string "Active Hero Count:" and the value of *act_hero_count*
+     5. FOR every item in *heroes* (should be a tuple containing the id and name for each record in **heroes**)
+        1. PRINT a string with the format "(id): (name)"
+     6. ENDFOR
+     7. END **display_active_heroes**
 2. **display_hero_info** (*id*)
-   - Display:
+   - Receives the id of a hero in heroes to display
+   - Displays:
      - ID: Name
      - "about_me"
      - Powers: abilities
@@ -58,6 +68,17 @@ Create an application that allows a user to interact with a database of superher
        - any friends
      - Foes:
        - any enemies
+   - Procedure: 
+     1. START **display_hero_info**
+     2. QUERY the **heroes** table for the name, about_me, and biography columns of the record where the passed *id* matches the value of the id column, store the value in *hero*
+     3. IF *hero* is empty (the passed id was not in the **heroes** table)
+        1. PRINT "Hero (id) was not found"
+        2. RETURN
+     4. ELSE
+        1. STORE the values of the name, about_me, and biography columns in *hero_name*, *hero_about_me*, *hero_biography*
+     5. ENDIF
+     6. QUERY the **abilities** table for the ability_type_id of all records where the passed *id* matches the value of the hero_id column, and then QUERY the **ability_types** table for the name column that matches those ability_type_id keys
+     7. STORE the values of the name column in **ability_types** in *hero_abilities*
 3. **add_hero**
    - Prompt for hero name
    - Prompt for optional about me blurb
@@ -65,17 +86,21 @@ Create an application that allows a user to interact with a database of superher
    - Insert command
    - Ask if user want to execute functions 4 and or 5?
 4. **change_power** (*id*)
-   - List current powers
+   - List hero's current powers
    - Ask if user wants to
      - a. add a power
      - b. remove a power
      - c. quit
     - If a.
-	  - Provide a list of current powers
-	  - Ask if user wants to add one of those, or a new one
-        - if new one, INSERT new one into ability_types
-        - UPDATE abilities with hero
-	- If b.
+	    - Provide a list of current powers
+	    - Ask if user wants to add one of those, or a new one
+        - if new one
+          - INPUT new ability
+          - INSERT new ability into ability_types
+          - GET the id from ability_types (name matches new ability)
+          - UPDATE abilities with hero id and ability type id
+    - Else if b.
+
 5. change_relationship (id1, id2)
 6. retire_hero (id)
 
@@ -86,6 +111,7 @@ Create an application that allows a user to interact with a database of superher
 	If the user enters a supported option, call a function that executes a query
 	Many functions require further input to build the query
 
+The prompts:
 "Welcome to the Internet Superpowered People Database"
 "Enter a numbered option below, or enter 'Q' to quit"
 1. Get a list of active superheroes
