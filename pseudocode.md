@@ -62,8 +62,10 @@ Create an application that allows a user to interact with a database of superher
    - Displays:
      - ID: Name
      - "about_me"
-     - Powers: abilities
-     - Biography
+     - Abilities: 
+       - any abilities
+     - Biography:
+       - biography
      - Friends:
        - any friends
      - Foes:
@@ -77,8 +79,27 @@ Create an application that allows a user to interact with a database of superher
      4. ELSE
         1. STORE the values of the name, about_me, and biography columns in *hero_name*, *hero_about_me*, *hero_biography*
      5. ENDIF
-     6. QUERY the **abilities** table for the ability_type_id of all records where the passed *id* matches the value of the hero_id column, and then QUERY the **ability_types** table for the name column that matches those ability_type_id keys
+     6. QUERY the **abilities** table for the *ability_type_id* of all records where the passed *id* matches the value of the *hero_id* column, and then QUERY the **ability_types** table for the name column that matches those *ability_type_id* keys
      7. STORE the values of the name column in **ability_types** in *hero_abilities*
+     8. QUERY the **heroes**, **relationships**, and **relationship_types** tables to retrieve the records where the passed *id* matches the value of *hero1_id* in **relationships**, and retrieve the *name*s from **heroes** that match the values of *hero2_id* in those records, and retrieve the *name*s from **relationship_types** that match the values of *relationship_type_id* in those records
+     9. Store the values with the relationship named "Friend" in *hero_friends*, and those with the relationship named "Enemy" in *hero_foes*
+     10. PRINT a string with the format "*id*: *hero_name*"
+     11. PRINT *hero_about_me*
+     12. Print "Abilities:"
+     13. FOR every ability in *hero_abilities*
+         - PRINT the ability
+     14. ENDFOR
+     15. PRINT "Biography:"
+     16. PRINT *hero_biography*
+     17. PRINT "Friends:"
+     18. FOR every friend in *hero_friends*
+         - PRINT the name of the friend
+     19. ENDFOR
+     20. PRINT "Foes:"
+     21. FOR every foe in *hero_foes*
+         - PRINT the name of the enemy
+     22. ENDFOR
+     23. END **display_hero_info**
 3. **add_hero**
    - Prompt for hero name
    - Prompt for optional about me blurb
