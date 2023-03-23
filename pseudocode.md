@@ -127,7 +127,9 @@ Create an application that allows a user to interact with a database of superher
    - Query the **heroes** table for the *name* that matches the passed *id*, store the value in *hero_name*
    - Ask the user if they want to delete the record for *hero_name*
    - If yes:
-     - Delete the record that matches the passed *id* from the table
+     - Delete the record that matches the passed *id* from the **heroes** table
+     - Delete all records in the **abilities** table that match the passed *id*
+     - Delete all records in the **relationships** table where the passed *id* matches either *hero1_id* or *hero2_id*
      - Print "*hero_name* was retired from the database"
 
 ### Procedure:

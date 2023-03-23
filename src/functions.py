@@ -62,6 +62,7 @@ def display_hero_info (id):
 
 # Adds a new hero to the heroes table. Requires a name, other fields are optional
 def add_hero():
+    # Prompt the user for information about the hero they want to add
     hero_name = input("Enter a name for the hero: ")
     about_me_check = input("Enter an 'about me' phrase? Y/N: ")
     hero_about_me = input("About me: ") if about_me_check.upper() == 'Y' else ""
@@ -91,5 +92,20 @@ def change_power (id):
 def change_relationship (id):
     pass
 
+# Removes the hero from the heroes table
 def retire_hero (id):
-    pass
+    # Confirm the user wants to delete this hero
+    query = "SELECT name FROM heroes WHERE id=%s"
+    hero_name = execute_query(query, (id,)).fetchone()[0]
+    retire_check = input(f"Remove {hero_name} from the database? Y/N: ")
+
+    # If yes, remove all records in the heroes, abilities, and relationships table that reference that hero
+    if retire_check.upper() == 'Y':
+        query = "DELETE FROM heroes WHERE id=%s"
+        execute_query(query, (id,))
+        query = "DELETE FROM abilities WHERE hero_id=%s"
+        execute_query(query, (id,))
+        query = "DELETE FROM relationships WHERE hero1_id=%s OR hero2_id=%s"
+        execute_query(query, (id, id))
+
+        print(f"{hero_name} was retired from the database")
