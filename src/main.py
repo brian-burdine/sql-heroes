@@ -35,6 +35,16 @@ def display_hero_info (id):
     for ability in abilities:
         hero_abilities.append(ability[0])
 
+    # Get hero relationships
+    query = "SELECT relationship_types.name, heroes.name FROM ((relationships JOIN heroes ON relationships.hero2_id = heroes.id) JOIN relationship_types ON relationships.relationship_type_id = relationship_types.id) WHERE relationships.hero1_id=%s"
+    relationships = execute_query(query, (id,)).fetchall()
+    hero_friends, hero_foes = [], []
+    for relationship in relationships:
+        if relationship[0] == "Friend":
+            hero_friends.append(relationship[1]) 
+        elif relationship[0] == "Enemy":
+            hero_foes.append(relationship[1])
+    
     # Display retrieved information
     print(f'{id}: {hero_name}')
     print(hero_about_me)
@@ -43,6 +53,12 @@ def display_hero_info (id):
         print(ability)
     print("Biography:")
     print(hero_biography)
+    print("Friends:")
+    for friend in hero_friends:
+        print(friend)
+    print("Foes:")
+    for foe in hero_foes:
+        print(foe)
 
 query_database = True
 
