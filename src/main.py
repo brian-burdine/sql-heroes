@@ -24,9 +24,11 @@ while query_database:
         case '3':
             add_hero()
         case '4':
-            change_power()
+            hero_id = input("Enter a hero id to modify: ")
+            change_power(hero_id)
         case '5':
-            change_relationship()
+            hero_id = input("Enter a hero id to modify: ")
+            change_relationship(hero_id)
         case '6':
             hero_id = input("Enter a hero id to retire: ")
             retire_hero(hero_id)
