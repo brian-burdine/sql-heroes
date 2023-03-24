@@ -1,5 +1,45 @@
 from database.db_connection import execute_query
 
+# Adds a record with passed values to a table and returns the id of the new entry
+def add_record (table, **entries):
+    # Build query from passed values
+    columns, columns_str, values = [], "", []
+    for key, value in entries.items():
+        columns.append(key)
+        columns_str += key + ", "
+        values.append(value)
+    # Cut off the last ", "
+    columns_str = columns_str[0:-2]
+    
+    query = f"INSERT INTO {table} ({columns_str}) VALUES ({('%s, ' * len(columns))[0:-2]})"
+    execute_query(query, tuple(values))
+
+    # Get id for new entry and return it
+    query = f"SELECT MAX(id) FROM {table}"
+    id = execute_query(query).fetchone()[0]
+    return id
+
+# Updates values of the record with matching id in the target table with passed entries
+def update_record (table, id, **entries):
+    # Build query from passed values
+    columns, columns_str, values = [], "", []
+    for key, value in entries.items():
+        columns.append(key)
+        columns_str += key + " = %s, "
+        values.append(value)
+    # Cut off the last ", "
+    columns_str = columns_str[0:-2]
+    # Add id to tuple of values to execute query
+    values.append(id)
+    
+    query = f"UPDATE {table} SET {columns_str} WHERE id=%s"
+    execute_query(query, tuple(values))
+
+# Deletes the record with matching id from target table
+def delete_record (table, id):
+    query = f"DELETE FROM {table} WHERE id=%s"
+    execute_query(query, (id,))
+
 # Displays the ids and names of all heroes in the heroes table
 def display_active_heroes ():
     # Get a count of the number of entries in heroes
@@ -47,7 +87,7 @@ def display_hero_info (id):
     
     # Display retrieved information
     print(f'{id}: {hero_name}')
-    print(hero_about_me)
+    print("Tagline: " + hero_about_me)
     print("Abilities:")
     for ability in hero_abilities:
         print(ability)
@@ -64,18 +104,19 @@ def display_hero_info (id):
 def add_hero():
     # Prompt the user for information about the hero they want to add
     hero_name = input("Enter a name for the hero: ")
-    about_me_check = input("Enter an 'about me' phrase? Y/N: ")
-    hero_about_me = input("About me: ") if about_me_check.upper() == 'Y' else ""
+    about_me_check = input("Enter a tagline? Y/N: ")
+    hero_about_me = input("Tagline: ") if about_me_check.upper() == 'Y' else ""
     biography_check = input("Enter a biography? Y/N: ")
     hero_biography = input("Biography: ") if biography_check.upper() == 'Y' else ""
     
     # Insert the new hero into the database
-    query = "INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s)"
-    execute_query(query, (hero_name, hero_about_me, hero_biography))
+    # query = "INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s)"
+    # execute_query(query, (hero_name, hero_about_me, hero_biography))
+    hero_id = add_record("heroes", name = hero_name, about_me = hero_about_me, biography = hero_biography)
 
     # Get the new hero's id
-    query = "SELECT MAX(id) FROM heroes"
-    hero_id = execute_query(query).fetchone()[0]
+    # query = "SELECT MAX(id) FROM heroes"
+    # hero_id = execute_query(query).fetchone()[0]
 
     # Update the user that the hero was added, prompt them to modify other tables
     print(f"Hero {hero_name} was added to the database with id {hero_id}")
@@ -85,6 +126,33 @@ def add_hero():
     relationship_check = input(f"Would you like to give {hero_name} some friends or foes? Y/N: ")
     if relationship_check.upper() == 'Y':
         change_relationship(hero_id)
+
+# Updates the value of the name column of the record of the given id in the heroes table
+def change_name (id):
+    query = "SELECT name FROM heroes WHERE id=%s"
+    old_name = execute_query(query, (id,)).fetchone()[0]
+    name_check = input(f"Would you like to change {old_name}'s codename? Y/N: ")
+    if name_check.upper() == 'Y':
+        new_name = input("Enter new codename: ")
+        update_record("heroes", id, name = new_name)
+
+# Updates the value of the about_me column of the record of the given id in the heroes table
+def change_about_me (id):
+    query = "SELECT name FROM heroes WHERE id=%s"
+    hero_name = execute_query(query, (id,)).fetchone()[0]
+    about_me_check = input(f"Would you like to change {hero_name}'s tagline? Y/N: ")
+    if about_me_check.upper() == 'Y':
+        new_about_me = input("Enter new tagline: ")
+        update_record("heroes", id, about_me = new_about_me)
+
+# Updates the value of the biography column of the record of the given id in the heroes table
+def change_biography (id):
+    query = "SELECT name FROM heroes WHERE id=%s"
+    hero_name = execute_query(query, (id,)).fetchone()[0]
+    biography_check = input(f"Would you like to change {hero_name}'s biography? Y/N: ")
+    if biography_check.upper() == 'Y':
+        new_biography = input("Enter new tagline: ")
+        update_record("heroes", id, biography = new_biography)
 
 def change_power (id):
     pass

@@ -113,7 +113,7 @@ Create an application that allows a user to interact with a database of superher
      - b. remove a power
      - c. quit
     - If a.
-	    - Provide a list of current powers
+	    - Provide a list of current powers (that exist, not specifically the hero's)
 	    - Ask if user wants to add one of those, or a new one
         - if new one
           - INPUT new ability
@@ -123,6 +123,9 @@ Create an application that allows a user to interact with a database of superher
     - Else if b.
 
 5. change_relationship (*id*)
+   - list all other heroes by id, name, and relationship to hero based on passed *id*
+   - ask for an id of a hero the user wants to change the relationship of
+   - display the current relationship like "(name of hero by *id*) is a friend of/a foe of/not affiliated with "
 6. retire_hero (*id*)
    - Query the **heroes** table for the *name* that matches the passed *id*, store the value in *hero_name*
    - Ask the user if they want to delete the record for *hero_name*
