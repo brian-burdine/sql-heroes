@@ -40,6 +40,19 @@ def delete_record (table, id):
     query = f"DELETE FROM {table} WHERE id=%s"
     execute_query(query, (id,))
 
+# Retrieves the name of the hero with the given id
+def get_hero_name (id):
+    # Get the name of the current hero
+    query = "SELECT name FROM heroes WHERE id=%s"
+    hero = execute_query(query, (id,)).fetchone()
+    
+    # Check to see if passed id returned a record
+    if hero == None:
+        print(f'Hero {id} not found')
+        return None
+    hero_name = hero[0]
+    return hero_name
+
 # Displays the ids and names of all heroes in the heroes table
 def display_active_heroes ():
     # Get a count of the number of entries in heroes
@@ -129,36 +142,94 @@ def add_hero():
 
 # Updates the value of the name column of the record of the given id in the heroes table
 def change_name (id):
-    query = "SELECT name FROM heroes WHERE id=%s"
-    old_name = execute_query(query, (id,)).fetchone()[0]
-    name_check = input(f"Would you like to change {old_name}'s codename? Y/N: ")
-    if name_check.upper() == 'Y':
-        new_name = input("Enter new codename: ")
-        update_record("heroes", id, name = new_name)
+    old_name = get_hero_name(id)
+
+    if not old_name == None:
+        name_check = input(f"Would you like to change {old_name}'s codename? Y/N: ")
+        if name_check.upper() == 'Y':
+            new_name = input("Enter new codename: ")
+            update_record("heroes", id, name = new_name)
 
 # Updates the value of the about_me column of the record of the given id in the heroes table
 def change_about_me (id):
-    query = "SELECT name FROM heroes WHERE id=%s"
-    hero_name = execute_query(query, (id,)).fetchone()[0]
-    about_me_check = input(f"Would you like to change {hero_name}'s tagline? Y/N: ")
-    if about_me_check.upper() == 'Y':
-        new_about_me = input("Enter new tagline: ")
-        update_record("heroes", id, about_me = new_about_me)
+    hero_name = get_hero_name(id)
+
+    if not hero_name == None:
+        about_me_check = input(f"Would you like to change {hero_name}'s tagline? Y/N: ")
+        if about_me_check.upper() == 'Y':
+            new_about_me = input("Enter new tagline: ")
+            update_record("heroes", id, about_me = new_about_me)
 
 # Updates the value of the biography column of the record of the given id in the heroes table
 def change_biography (id):
-    query = "SELECT name FROM heroes WHERE id=%s"
-    hero_name = execute_query(query, (id,)).fetchone()[0]
-    biography_check = input(f"Would you like to change {hero_name}'s biography? Y/N: ")
-    if biography_check.upper() == 'Y':
-        new_biography = input("Enter new tagline: ")
-        update_record("heroes", id, biography = new_biography)
+    hero_name = get_hero_name(id)
+
+    if not hero_name == None:
+        biography_check = input(f"Would you like to change {hero_name}'s biography? Y/N: ")
+        if biography_check.upper() == 'Y':
+            new_biography = input("Enter new tagline: ")
+            update_record("heroes", id, biography = new_biography)
 
 def change_power (id):
     pass
 
+# Brings up a list of current relationships to other heroes, and prompts the 
+# user to select another hero to alter the relationship with
 def change_relationship (id):
-    pass
+    # Get the name of the target hero
+    hero_name = get_hero_name(id)
+
+    if hero_name == None:
+        return
+    
+    # Three columns: id of hero, name of hero, their relationship to current hero
+    # Get the ids and names of other heroes
+    query = "SELECT h.id, h.name FROM heroes as h WHERE id<>%s"
+    other_heroes = execute_query(query, (id,)).fetchall()
+    if other_heroes == None:
+        print("No other heroes were found, cannot update relationships")
+        return
+    
+    relation_list = []
+    for other_hero_id, other_hero_name in other_heroes:
+        relation_list.append([other_hero_id, other_hero_name, "Unaffiliated"])
+
+    # Get the relationships current hero already possesses
+    query = "SELECT r.hero2_id, rt.name FROM relationships as r JOIN relationship_types as rt ON r.relationship_type_id=rt.id WHERE hero1_id=%s"
+    relationships = execute_query(query, (id,)).fetchall()
+
+    # Update relation_list if any pre-existing relationships exist
+    if relationships != None:
+        for hero_id, relationship in relationships:
+            for item in relation_list:
+                if hero_id == item[0]:
+                    item[2] = relationship
+    
+    # Display current relationships
+    print(f"Relationships of {hero_name}:")
+    for item in relation_list:
+        print(f"{item[0]}: {item[1]} --- {item[2]}")
+    
+    find_hero, new_relation_id = True, 0
+    while find_hero:
+        hero_check = input(f"Enter the id of the hero that you want to change {hero_name}'s relationship with: ")
+        print(hero_check)
+        if hero_check == id:
+            print("Only relationships with other people, please")
+            continue
+        for item in relation_list:
+            if hero_check == item[0]:
+                new_relation_id = hero_check
+                find_hero = False
+        
+        continue_check = input("Id was not found. Input another id? Y/N: ")
+        if continue_check.upper() == 'Y':
+            continue
+        else:
+            return
+    
+    print(new_relation_id)
+
 
 # Removes the hero from the heroes table
 def retire_hero (id):
