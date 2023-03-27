@@ -213,20 +213,21 @@ def change_relationship (id):
     find_hero, new_relation_id = True, 0
     while find_hero:
         hero_check = input(f"Enter the id of the hero that you want to change {hero_name}'s relationship with: ")
-        print(hero_check)
         if hero_check == id:
             print("Only relationships with other people, please")
             continue
+        hero_check = int(hero_check)
         for item in relation_list:
             if hero_check == item[0]:
                 new_relation_id = hero_check
                 find_hero = False
         
-        continue_check = input("Id was not found. Input another id? Y/N: ")
-        if continue_check.upper() == 'Y':
-            continue
-        else:
-            return
+        if find_hero:
+            continue_check = input("Id was not found. Input another id? Y/N: ")
+            if continue_check.upper() == 'Y':
+                continue
+            else:
+                return
     
     print(new_relation_id)
 
